@@ -1,0 +1,71 @@
+:root {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #233247;
+  background: #edf2f8;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { width: min(100% - 40px, 660px); margin: 64px auto; }
+header { margin-bottom: 30px; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .16em; color: #254f85; }
+h1 { font-family: 'Trebuchet MS', sans-serif; font-size: clamp(30px, 6vw, 40px); letter-spacing: -.04em; margin: 10px 0; }
+.intro, .hint, .optional { color: #59697d; }
+.intro { line-height: 1.6; margin: 0; }
+.panel { background: #fff; border: 1px solid #cbd6e4; border-radius: 12px; padding: 28px; margin-bottom: 22px; }
+h2 { font-size: 19px; margin: 0 0 24px; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 9px; }
+.optional { font-weight: 400; }
+.file-field { border-left: 3px solid #254f85; background: #edf2f8; padding: 18px; margin-bottom: 24px; border-radius: 0 6px 6px 0; }
+.hint { font-size: 13px; line-height: 1.5; margin: 0 0 16px; }
+input, button { font: inherit; }
+input[type='file'] { width: 100%; font-size: 14px; }
+input::file-selector-button { border: 1px solid #cbd6e4; background: #fff; color: #233247; padding: 9px 12px; border-radius: 5px; margin-right: 10px; cursor: pointer; }
+input[type='text'] { width: 100%; border: 1px solid #aab9cc; border-radius: 6px; padding: 12px; }
+button { margin-top: 24px; border: 0; border-radius: 6px; background: #254f85; color: #fff; padding: 13px 20px; font-weight: 600; cursor: pointer; }
+button:hover { background: #1a3b66; }
+:focus-visible { outline: 3px solid #547eb3; outline-offset: 3px; }
+fieldset:disabled { opacity: .65; }
+fieldset:disabled button { cursor: wait; }
+.message { font-size: 14px; line-height: 1.6; margin: 20px 0 0; }
+.error { color: #a12535; }
+.success { color: #226345; }
+dl { margin: 0; }
+dl > div + div { margin-top: 20px; }
+dt { color: #59697d; font-size: 13px; margin-bottom: 5px; }
+dd { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
+.summary { white-space: pre-wrap; }
+.dashboard-layout { width: min(100% - 40px, 1280px); }
+.tabs { display: flex; gap: 10px; margin-bottom: 22px; }
+.tabs button { margin: 0; background: #fff; color: #254f85; border: 1px solid #cbd6e4; }
+.tabs button[aria-pressed='true'] { background: #254f85; color: #fff; }
+.dashboard-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.dashboard-heading h2, .dashboard-heading button { margin: 0; }
+button:disabled { opacity: .65; cursor: wait; }
+.table-scroll { overflow-x: auto; margin-top: 24px; }
+table { width: 100%; min-width: 1040px; border-collapse: collapse; table-layout: fixed; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 14px 12px; border-bottom: 1px solid #cbd6e4; overflow-wrap: anywhere; line-height: 1.6; }
+th { background: #edf2f8; font-size: 13px; }
+th:nth-child(3) { width: 28%; }
+.document-summary { white-space: pre-wrap; }
+td a { color: #254f85; text-underline-offset: 3px; }
+.urgency { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+.urgency-high { background: #fbe7ea; color: #a12535; }
+.urgency-medium { background: #fff2cf; color: #765400; }
+.urgency-low { background: #e4f3eb; color: #226345; }
+.review-button { margin: 0 0 6px; padding: 8px 10px; }
+.review-dialog { width: min(100% - 32px, 520px); max-height: calc(100% - 40px); overflow-y: auto; border: 1px solid #cbd6e4; border-radius: 12px; padding: 28px; color: #233247; background: #fff; }
+.review-dialog::backdrop { background: rgb(35 50 71 / 45%); }
+.review-dialog form { margin-top: 24px; }
+.review-dialog label:not(:first-child) { margin-top: 20px; }
+.review-dialog textarea { width: 100%; border: 1px solid #aab9cc; border-radius: 6px; padding: 12px; font: inherit; resize: vertical; }
+.review-actions { display: flex; gap: 12px; justify-content: flex-end; }
+.review-actions .secondary { background: #edf2f8; color: #254f85; border: 1px solid #cbd6e4; }
+@media (max-width: 480px) {
+  main { width: calc(100% - 28px); margin: 32px auto; }
+  .panel { padding: 20px; }
+  button { width: 100%; }
+}
