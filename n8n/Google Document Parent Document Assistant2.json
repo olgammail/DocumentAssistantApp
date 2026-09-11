@@ -1,0 +1,169 @@
+{
+  "name": "Google Document Parent Document Assistant2",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1SBkDnq1hN7V-q94jCylBXy0XEFLJS34i",
+          "mode": "list",
+          "cachedResultName": "Incoming Documents",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1SBkDnq1hN7V-q94jCylBXy0XEFLJS34i"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1376,
+        48
+      ],
+      "id": "e90c2c5c-0089-47dd-b4e9-942f18525251",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Pa6LuilETwLVcBZj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1088,
+        32
+      ],
+      "id": "dae8f962-03f0-44e1-9d9d-8b68cefb251c",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Pa6LuilETwLVcBZj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "xNV1GUmdXyWRCpvX",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/xNV1GUmdXyWRCpvX",
+          "cachedResultName": "DocumentAssistant_2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -832,
+        64
+      ],
+      "id": "dea64646-cda0-444c-abf9-e4aeff298d9e",
+      "name": "Call 'DocumentAssistant_2'"
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Download file').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -624,
+        64
+      ],
+      "id": "dc5de936-dc27-422e-86fc-be261a1ddc1d",
+      "name": "Delete a file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Pa6LuilETwLVcBZj",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Call 'DocumentAssistant_2'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'DocumentAssistant_2'": {
+      "main": [
+        [
+          {
+            "node": "Delete a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ddbcf847-d383-423f-9f97-432da749c9b8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "eb1928fea320d456e129473be0d62952aa2a816d15b026b76ab2e34000e6a7a3"
+  },
+  "id": "Hs6XpWSuYCU0MgbP",
+  "tags": []
+}

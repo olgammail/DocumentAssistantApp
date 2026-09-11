@@ -44,3 +44,23 @@ The request uses `Content-Type: application/json` and `x-api-key`. A successful 
 - `.env.example`, `.gitignore`: configuration template and ignored local files.
 
 `npm run build` type-checks and creates a production build. `npm run preview` serves that build locally. No document list or review endpoint is implemented.
+
+## n8n Workflows
+
+The `n8n/` directory contains five exported workflows:
+
+- **process-document** (`process-document.json`): HTTP parent workflow used by the frontend/Postman. Receives `POST /process-document`, converts the Base64 document to a binary file, prepares file metadata, calls `DocumentAssistant_2`, and returns the result.
+- **DocumentAssistant_2** (`DocumentAssistant_2.json`): Shared document-processing workflow. Handles file upload, TXT/PDF/DOCX processing, AI extraction, Google Sheets logging, Gmail notification, moving the processed file, and returning the processing result.
+- **get-documents** (`get-documents.json`): Provides `GET /documents` for the application Dashboard.
+- **review-document** (`review-document.json`): Provides `POST /review` for updating document review status, reviewer name, and review note.
+- **Google Document Parent Document Assistant2** (`Google Document Parent Document Assistant2.json`): Watches the Google Drive Incoming Documents folder, downloads a new file, calls `DocumentAssistant_2`, and deletes the original Incoming file after successful processing.
+
+### Setup after import
+
+Import these JSON files into your n8n instance. Configure or select your own Google Drive, Google Docs, Google Sheets, Gmail, Ollama, and Header Auth credentials as needed. Configure credentials in n8n; do not put API keys, passwords, OAuth tokens, or other secrets in these exports or the README.
+
+You may also need to configure your own Incoming Documents folder, Temp folder, Processed Documents folder, Google Sheet, and notification email address.
+
+In nodes that call `DocumentAssistant_2`, select the imported `DocumentAssistant_2` workflow again if necessary. Workflow IDs can differ between n8n instances, so exported references may not resolve automatically.
+
+Configure the frontend's `VITE_N8N_PROCESS_DOCUMENT_URL`, `VITE_N8N_DOCUMENTS_URL`, and `VITE_N8N_REVIEW_URL` with the corresponding webhook URLs in your local `.env.local`, and configure `VITE_N8N_API_KEY` to match your Header Auth setup. Keep `.env.local` private and ignored by Git, and restart Vite after changing it.

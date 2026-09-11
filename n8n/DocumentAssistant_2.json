@@ -1,0 +1,974 @@
+{
+  "name": "DocumentAssistant_2",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "txt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0cb2de88-6b3a-4d08-a8a7-2ba9b2c417ea"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "TXT"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5863cf0e-5e96-4857-9c98-c93ab52b7a4c",
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PDF"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ed5f1706-94e7-4d0a-bb6f-5d387dcb925f",
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "docx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "DOCX"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -2448,
+        -16
+      ],
+      "id": "7e601e92-7ce7-4de2-88c6-5c434b1099a4",
+      "name": "Switch File Type"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2080,
+        -96
+      ],
+      "id": "88148d09-2235-4e36-bf36-8527bbbf9fd3",
+      "name": "Extract from TXT File"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2080,
+        128
+      ],
+      "id": "5ec24216-a1d9-4f1d-8044-c093967ff2cd",
+      "name": "Extract from PDF File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/upload/drive/v2/files?uploadType=media&convert=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -2112,
+        304
+      ],
+      "id": "92bec23d-c1ed-4c23-acfe-05e2059c6544",
+      "name": "HTTP Request",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Pa6LuilETwLVcBZj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -1808,
+        304
+      ],
+      "id": "abfbd8e6-bac2-4656-99a5-bcfb89629787",
+      "name": "Get a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "w6WD6KTUd5X8mnXq",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.document_text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "document_type",
+              "description": "Choose exactly one: invoice, request, report, complaint, contract, quote, or other. Choose only based on the content of the document."
+            },
+            {
+              "name": "sender_or_company",
+              "description": "Name of the person or organization that explicitly sent, authored, issued, or created the document.  Return a name only when the document clearly identifies that person or organization as the sender, author, issuer, or source.  Do not use a person's or company's name merely because it appears in a meeting title, subject, participant list, filename, link, or other context.  If the sender or organization is not explicitly identifiable, return \"Not found\".  Do not guess or infer the sender."
+            },
+            {
+              "name": "summary",
+              "description": "Explain the document in no more than three short sentences. Include only information that appears in the document. Do not invent missing details."
+            },
+            {
+              "name": "requested_action",
+              "description": "What should the company do next according to the document? Use \"No action found\" when no requested action appears. Do not invent an action."
+            },
+            {
+              "name": "deadline",
+              "description": "Return the deadline exactly as written in the document. Use \"Not found\" when no deadline appears. Do not calculate, reformat, or invent a deadline."
+            },
+            {
+              "name": "urgency",
+              "description": "Choose exactly one: Low, Medium, or High. Mark High only when the document contains an immediate deadline, payment risk, legal risk, safety risk, or an explicit urgent request."
+            },
+            {
+              "name": "department",
+              "description": "Choose exactly one: Sales, Finance, Support, HR, Management, or General. Choose the department that would most appropriately handle the document."
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "Read the document like an office assistant.\n\nExtract only information that is explicitly supported by the document.\n\nDo not invent, guess, assume, or infer missing details.\n\nUse \"Not found\" when information is missing, except for requested_action, where you must use \"No action found\".\n\nFor sender_or_company, return a person or organization only when the document clearly identifies them as the sender, author, issuer, or source. A name appearing in a meeting title, subject, participant list, filename, link, or other context does not prove that they are the sender.\n\nMark urgency as High only when the document contains an immediate deadline, payment risk, legal risk, safety risk, or an explicit urgent request.\n\nFollow the allowed values and instructions defined for every attribute."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -1312,
+        -32
+      ],
+      "id": "fa32ff7a-46a0-4bef-8ab7-8c5f33ce6365",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "gpt-oss:20b",
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -1136,
+        240
+      ],
+      "id": "78f39d18-97d0-464b-8b9f-82c8d1ab2411",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "r5OmuIc4vRJ1oJzA",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acc6af92-096e-4cc8-b2ba-5d961433f26c",
+              "name": "=document_text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1616,
+        96
+      ],
+      "id": "61ce7d4e-49ec-427d-945d-6a3759277506",
+      "name": "Edit Fields PDF"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acc6af92-096e-4cc8-b2ba-5d961433f26c",
+              "name": "=document_text",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1552,
+        320
+      ],
+      "id": "7a3e1f8a-af4a-4d63-b5c2-96fd88af12eb",
+      "name": "Edit Fields Docs"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acc6af92-096e-4cc8-b2ba-5d961433f26c",
+              "name": "=document_text",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1632,
+        -112
+      ],
+      "id": "1dd6b216-8ee8-4e04-a669-77c68acace4b",
+      "name": "Edit Fields TXT"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1AijcxRjGgvuf6kGis6I-izKnYh-XFWTAS6IGWqW0vB4/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "גיליון1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AijcxRjGgvuf6kGis6I-izKnYh-XFWTAS6IGWqW0vB4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Urgency": "={{ $json.output.urgency }}",
+            "Summary": "={{ $json.output.summary }}",
+            "Deadline": "={{ $json.output.deadline }}",
+            "Department": "={{ $json.output.department }}",
+            "Document Type": "={{ $json.output.document_type }}",
+            "Sender / Company": "={{ $json.output.sender_or_company }}",
+            "Requested Action": "={{ $json.output.requested_action }}",
+            "Received At": "={{ $now.setZone('Asia/Jerusalem').toISO() }}",
+            "File Name": "={{ $('When Executed by Another Workflow').item.binary.data.fileName }}",
+            "File Link": "=https://drive.google.com/file/d/{{ $('Upload file').item.json.id }}/view",
+            "Status": "Analyzed",
+            "Document ID": "=doc-{{ $execution.id }}",
+            "Reviewed By": "={{ '' }}",
+            "Review Note": "={{ '' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Received At",
+              "displayName": "Received At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File Name",
+              "displayName": "File Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File Link",
+              "displayName": "File Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Document Type",
+              "displayName": "Document Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sender / Company",
+              "displayName": "Sender / Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Requested Action",
+              "displayName": "Requested Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Deadline",
+              "displayName": "Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Urgency",
+              "displayName": "Urgency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Document ID",
+              "displayName": "Document ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reviewed By",
+              "displayName": "Reviewed By",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Review Note",
+              "displayName": "Review Note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -928,
+        -32
+      ],
+      "id": "3002c69a-f96e-40e0-939e-7cab8dfc243b",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7ddSWlwpjBmIwFpM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e76d42f1-e6ee-4120-a97e-daf61fc8d6e8",
+              "leftValue": "={{ $json.Urgency }}",
+              "rightValue": "High",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -736,
+        -32
+      ],
+      "id": "139e7172-1f86-4bb5-878a-530b09101bc7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "olgammail@gmail.com",
+        "subject": "=Document processed: {{ $json['File Name'] }}",
+        "emailType": "text",
+        "message": "=A new document was processed successfully. The file name {{ $json['File Name'] }}, summary: {{ $json.Summary }}, requested action : {{ $json['Requested Action'] }}, responsible department: {{ $json.Department }}, link: {{ $json['File Link'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -544,
+        192
+      ],
+      "id": "5271db6c-d8eb-4a6e-8323-e2e73a67a47b",
+      "name": "No Urgent EMail",
+      "webhookId": "f55cb5ca-a21a-48ec-b5e6-398bff47137f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4rf0JVW9dDGohvq1",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "olgammail@gmail.com",
+        "subject": "=URGENT: {{ $json['Document Type'] }} from {{ $json['Sender / Company'] }} ",
+        "emailType": "text",
+        "message": "=A new urgent document was processed. The file name {{ $json['File Name'] }}, summary: {{ $json.Summary }}, requested action : {{ $json['Requested Action'] }}, deadline: {{ $json.Deadline }}, {{ $json.Urgency }}, responsible department: {{ $json.Department }}, link: {{ $json['File Link'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -560,
+        -160
+      ],
+      "id": "79d049d4-e6ea-4a08-a313-855237adb498",
+      "name": "Urgent EMail",
+      "webhookId": "3523b4e9-41f3-4071-be33-fd1163cd82f1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4rf0JVW9dDGohvq1",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -3024,
+        -32
+      ],
+      "id": "b52ec8ae-6b72-469e-a473-04077a60ded0",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1c79S7fJLRQaH5nWsUWUYrhSHxuJWAM5c",
+          "mode": "list",
+          "cachedResultName": "Temp folder",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1c79S7fJLRQaH5nWsUWUYrhSHxuJWAM5c"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2752,
+        -32
+      ],
+      "id": "03d0b94e-f2fc-4089-8f70-06f548015775",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Pa6LuilETwLVcBZj",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2576,
+        -272
+      ],
+      "id": "478fa11b-5484-4013-bee0-ebbf50f4d0aa",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a7a327c6-0791-4063-808f-f97fc643a2c8",
+              "name": "status",
+              "value": "processed",
+              "type": "string"
+            },
+            {
+              "id": "75a8f3dd-6a3f-46c7-9156-9f77209aba78",
+              "name": "document_id",
+              "value": "=doc-{{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "a24c79f7-832d-4805-b232-ac2a6c31b29e",
+              "name": "file_name",
+              "value": "={{ $('When Executed by Another Workflow').item.binary.data.fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "33c1973b-9d9b-4234-a101-57890cd1d9a2",
+              "name": "summary",
+              "value": "={{ $('Information Extractor').item.json.output.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "6e0f5cfd-325c-4528-8901-0126979a9db7",
+              "name": "urgency",
+              "value": "={{ $('Information Extractor').item.json.output.urgency }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        16
+      ],
+      "id": "cb9df7ed-60d5-414e-9ca0-72c3b30b9d43",
+      "name": "Return Result"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Upload file').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1Kxif7o2V5mR-z5BLPGBiYjwX0zmg01VX",
+          "mode": "list",
+          "cachedResultName": "Processed Documents",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1Kxif7o2V5mR-z5BLPGBiYjwX0zmg01VX"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "cb3107cd-f2d9-4da3-a84c-c75d89cf5e2e",
+      "name": "Move file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Pa6LuilETwLVcBZj",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Switch File Type": {
+      "main": [
+        [
+          {
+            "node": "Extract from TXT File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from PDF File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from PDF File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from TXT File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields TXT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields PDF": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields Docs": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields TXT": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Urgent EMail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Urgent EMail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Urgent EMail": {
+      "main": [
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Urgent EMail": {
+      "main": [
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Switch File Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move file": {
+      "main": [
+        [
+          {
+            "node": "Return Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4c4f7bae-5906-4e64-a748-a081f532a576",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "eb1928fea320d456e129473be0d62952aa2a816d15b026b76ab2e34000e6a7a3"
+  },
+  "id": "xNV1GUmdXyWRCpvX",
+  "tags": [
+    {
+      "updatedAt": "2026-09-05T13:47:02.122Z",
+      "createdAt": "2026-09-05T13:47:02.122Z",
+      "id": "euFRS3Ty5HSEDBkw",
+      "name": "DocumentAssistant_2"
+    }
+  ]
+}

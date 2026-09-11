@@ -1,0 +1,175 @@
+{
+  "name": "process-document",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "process-document",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        0
+      ],
+      "id": "04c3bddd-d921-4aee-96bd-32fedf08c6ec",
+      "name": "Webhook",
+      "webhookId": "d3b57e3a-43d4-4819-8d6a-b3c20a4b75da",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RDSOm7wnfeqL4ByB",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "=body.file_base64",
+        "options": {
+          "fileName": "={{ $json.body.file_name }}",
+          "mimeType": "={{ $json.body.mime_type }}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "480cd738-1db0-4b85-a690-29516ffa5bea",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        640,
+        0
+      ],
+      "id": "2fc0234c-9ebc-4fba-af53-12cc329fa0e6",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "xNV1GUmdXyWRCpvX",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/xNV1GUmdXyWRCpvX",
+          "cachedResultName": "DocumentAssistant_2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        0
+      ],
+      "id": "aa017154-04f8-4284-8ae3-d0399c95e782",
+      "name": "Call 'DocumentAssistant_2'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ddc7438a-24d4-48ed-bceb-a2b04beba3c5",
+              "name": "fileExtension",
+              "value": "={{ $binary.data.fileExtension }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "484905a3-c6f3-4c5e-8a56-b89e2ee7ffd7",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'DocumentAssistant_2'": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Call 'DocumentAssistant_2'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4bad4b8d-0a4f-4420-aacf-009dade346a8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "eb1928fea320d456e129473be0d62952aa2a816d15b026b76ab2e34000e6a7a3"
+  },
+  "id": "YoOGGMqsa66C4NPN",
+  "tags": []
+}

@@ -1,0 +1,160 @@
+{
+  "name": "get-documents",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "documents",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -192,
+        16
+      ],
+      "id": "6cf5ae5b-ce6d-4677-91f3-74e61b771cea",
+      "name": "Webhook",
+      "webhookId": "76de1bf4-600f-4ea3-8870-51e3b0b4ed04",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RDSOm7wnfeqL4ByB",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1AijcxRjGgvuf6kGis6I-izKnYh-XFWTAS6IGWqW0vB4",
+          "mode": "list",
+          "cachedResultName": "Document Processing Log ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AijcxRjGgvuf6kGis6I-izKnYh-XFWTAS6IGWqW0vB4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "גיליון1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AijcxRjGgvuf6kGis6I-izKnYh-XFWTAS6IGWqW0vB4/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        64,
+        32
+      ],
+      "id": "a19689a8-a3fa-425b-9b2e-5bcf38aa2003",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7ddSWlwpjBmIwFpM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        560,
+        32
+      ],
+      "id": "e6be3367-1909-41d7-9ac4-d7adb8cf3e3e",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6ff9219d-cc74-4619-9d8f-70281a90727e",
+              "leftValue": "={{ $json['Document ID'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        288,
+        32
+      ],
+      "id": "80040c45-e376-42f6-9014-36ba3287245f",
+      "name": "Filter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "287c70fc-1f37-4e64-b0bf-c327b2293700",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "eb1928fea320d456e129473be0d62952aa2a816d15b026b76ab2e34000e6a7a3"
+  },
+  "id": "m5hGc6MaO9kOG8MN",
+  "tags": []
+}
