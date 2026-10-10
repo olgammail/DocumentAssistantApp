@@ -19,8 +19,8 @@
       "webhookId": "76de1bf4-600f-4ea3-8870-51e3b0b4ed04",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "RDSOm7wnfeqL4ByB",
-          "name": "Header Auth account"
+          "id": "eGlOgRN8FzEZlGbF",
+          "name": "Process Document Webhook Auth"
         }
       }
     },
@@ -150,7 +150,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "287c70fc-1f37-4e64-b0bf-c327b2293700",
+  "versionId": "4ff7e319-f750-4b51-b4b8-2da727e59c03",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "eb1928fea320d456e129473be0d62952aa2a816d15b026b76ab2e34000e6a7a3"
